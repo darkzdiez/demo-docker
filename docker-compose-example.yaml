@@ -1,0 +1,144 @@
+version: "3.9"
+
+services: 
+
+    php:
+        image: php:8.1.02-hard
+        ports: 
+            - 80:80
+            - 443:443
+            - 8080:8080
+            - 8443:8443
+            - 9876:9876
+        volumes: 
+            - ./html:/var/www/html
+            - ./root/ssl:/root/ssl
+            - ./root/.composer:/root/.composer
+            - ./root/.ssh:/root/.ssh
+            - ./root/.bash_history:/root/.bash_history
+            - ./root/.psql_history:/root/.psql_history
+            - ./root/.zsh_history:/root/.zsh_history
+            - ./root/.local/share/pnpm:/root/.local/share/pnpm
+        networks:
+            - app
+        # links:
+        #     - mysql57
+        #     - postgres12
+        #environment: 
+        #    APACHE_DOCUMENT_ROOT: /var/www/html
+    mysql57:
+        image: mysql:5.7
+        command: --secure-file-priv=""
+        ports: 
+            - 3306:3306
+        volumes: 
+            - ./mysql57/data:/var/lib/mysql
+            - ./mysql57/files:/var/lib/mysql-files
+            #- ./mysql-config:/etc/mysql/
+        networks:
+            app:
+                aliases:
+                    - mysql
+        environment: 
+            MYSQL_ROOT_PASSWORD: root
+    mysql82:
+        image: mysql:8.2
+        command: --secure-file-priv=""
+        ports: 
+            - 3307:3306
+        volumes: 
+            - ./mysql82/data:/var/lib/mysql
+            - ./mysql82/files:/var/lib/mysql-files
+            #- ./mysql-config:/etc/mysql/
+        networks:
+            app:
+                aliases:
+                    - mysql
+        environment: 
+            MYSQL_ROOT_PASSWORD: root
+    # mysql56:
+    #     image: mysql:5.6
+    #     command: --secure-file-priv=""
+    #     ports: 
+    #         - 3307:3306
+    #     volumes: 
+    #         - ./mysql56/data:/var/lib/mysql
+    #         - ./mysql56/files:/var/lib/mysql-files
+    #         #- ./mysql-config:/etc/mysql/
+    #     networks:
+    #         app:
+    #             aliases:
+    #                 - mysql
+    #     environment: 
+    #         MYSQL_ROOT_PASSWORD: root
+    # mailhog:
+    #     image: mailhog/mailhog
+    #     ports: 
+    #         - 1025:1025
+    #         - 8025:8025
+    #     # volumes:
+    #     #   - ./mailhog:/data
+    #     networks:
+    #         app:
+    #             aliases:
+    #                 - mailhog
+    #     # Pendiente averiguar donde guarda
+    #     # environment: 
+    #     #     MH_STORAGE: /data
+    # postgres12:
+    #     image: postgres:12-alpine
+    #     ports: 
+    #         - 5432:5432
+    #     volumes:
+    #         - nfsmountpgdata:/var/lib/postgresql/data
+    #         # - $PWD/postgres-data:/var/lib/postgresql/data:rw
+    #     environment:
+    #         POSTGRES_USER: postgres
+    #         POSTGRES_PASSWORD: pgpassword
+    #         PGDATA: /var/lib/postgresql/data/pgdata
+    #     networks:
+    #         app:
+    #             aliases:
+    #                 - postgres12
+    #                 - serverposgres
+    #                 - postgres
+    # pgadmin4:
+    #     image: dpage/pgadmin4:latest
+    #     ports:
+    #         - 5050:80
+    #     volumes:
+    #         - ./pgadmin4-storage:/var/lib/pgadmin/storage/
+    #     # links:
+    #     #     - postgres12
+    #     environment:
+    #         PGADMIN_DEFAULT_EMAIL: admin@admin.com
+    #         PGADMIN_DEFAULT_PASSWORD: root
+    #     networks:
+    #         app:
+    #             aliases:
+    #                 - pgadmin4
+    #     #volumes:
+    #     #pgadmin4-storage:
+networks:
+    app:
+    # postgres10:
+    #     image: postgres:10
+    #     ports: 
+    #         - 5432:5432
+    #     volumes:
+    #         - ./postgres-data:/var/lib/postgresql/data
+    #     environment:
+    #         POSTGRES_PASSWORD: pgpassword
+# sudo docker system prune --volumes
+# sudo docker system prune --all # No usar, borra todo, incluyendo los contenedores y las volumenes
+# sudo service docker restart
+# docker volume rm work_nfsmountpgdata
+# path: /var/lib/docker/volumes
+volumes:
+    nfsmountpgdata:
+        driver: local
+        # driver_opts:
+            # work_nfsmountdbdata: btrfs
+            # device: ":${PWD}/postgres-data"
+            # device: ./postgres12-data
+            # device: /home/darkzdiez/docker/work/postgres12-data

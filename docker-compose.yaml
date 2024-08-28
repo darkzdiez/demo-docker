@@ -1,0 +1,11 @@
+version: "3.9"
+
+services: 
+    prueba:
+        image: testing:v4
+        ports: 
+            - 8088:80
+            - 443:443
+        volumes: 
+            - ./demo:/demo
+            - ./app-laravel:/var/www/html/mi-app
